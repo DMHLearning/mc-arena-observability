@@ -1,0 +1,46 @@
+health:
+  sample_interval_ticks: 100
+  hysteresis:
+    degrade_enter_seconds: 10
+    degrade_exit_seconds: 20
+    critical_enter_seconds: 5
+    critical_exit_seconds: 30
+  thresholds:
+    tps:
+      degraded_below: 19.93
+      critical_below: 15.0
+    mspt:
+      degraded_above: 40.0
+      critical_above: 62.5
+
+detectors:
+  wave_stuck:
+    enabled: true
+    max_wave_duration_seconds: 180
+    no_progress_seconds: 30
+  reset_stuck:
+    enabled: true
+    reset_timeout_seconds: 60
+  anomalous_death:
+    enabled: true
+    mspt_threshold: 45.0
+    suspicious_causes:
+      - VOID
+      - SUFFOCATION
+      - FALL
+
+export:
+  unifiedmetrics:
+    enabled: true
+  matchmaker_bridge:
+    enabled: true
+    batch_interval_seconds: 5
+    rate_limit:
+      incident_per_arena_per_minute: 6
+
+matchmaker:
+  server-id: "paper-arena"
+  arena-id: "solo_arena_01"
+  mode: "solo"
+  max-players: 1
+  ttl-ms: 315360000000

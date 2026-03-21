@@ -1,0 +1,9 @@
+name: ArenaObservability
+version: '${version}'
+main: dev.denismasterherobrine.finale.arenaobservability.ArenaObservabilityPlugin
+api-version: '1.21'
+softdepend: [ArenaRuntime, ArenaWorldManagerPlugin, UnifiedMetrics]
+prefix: ArenaObservability
+load: STARTUP
+authors: [ DenisMasterHerobrine ]
+description: Observability, health snapshots, failure detection and metrics for arena servers.
