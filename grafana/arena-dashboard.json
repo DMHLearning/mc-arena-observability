@@ -51,8 +51,8 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "rate(minecraft_tick_duration_seconds_sum{server=~\"$server\"}[1m]) / rate(minecraft_tick_duration_seconds_count{server=~\"$server\"}[1m])",
-          "legendFormat": "{{server}} MSPT (avg)",
+          "expr": "rate(minecraft_tick_duration_seconds_sum{instance=~\"$instance\"}[1m]) / rate(minecraft_tick_duration_seconds_count{instance=~\"$instance\"}[1m])",
+          "legendFormat": "{{instance}} MSPT (avg)",
           "hide": true
         },
         {
@@ -63,8 +63,8 @@
         },
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "clamp_max(20 / (rate(minecraft_tick_duration_seconds_sum{server=~\"$server\"}[1m]) / rate(minecraft_tick_duration_seconds_count{server=~\"$server\"}[1m]) * 20), 20)",
-          "legendFormat": "{{server}} TPS (est.)",
+          "expr": "clamp_max(20 / (rate(minecraft_tick_duration_seconds_sum{instance=~\"$instance\"}[1m]) / rate(minecraft_tick_duration_seconds_count{instance=~\"$instance\"}[1m]) * 20), 20)",
+          "legendFormat": "{{instance}} TPS (est.)",
           "refId": "C"
         }
       ],
@@ -94,8 +94,8 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "rate(minecraft_tick_duration_seconds_sum{server=~\"$server\"}[1m]) / rate(minecraft_tick_duration_seconds_count{server=~\"$server\"}[1m]) * 1000",
-          "legendFormat": "{{server}} MSPT"
+          "expr": "rate(minecraft_tick_duration_seconds_sum{instance=~\"$instance\"}[1m]) / rate(minecraft_tick_duration_seconds_count{instance=~\"$instance\"}[1m]) * 1000",
+          "legendFormat": "{{instance}} MSPT"
         }
       ],
       "title": "MSPT (ms per tick)",
@@ -117,8 +117,8 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "arena_homeostasis_state{server=~\"$server\", state=\"HEALTHY\"} * 0 + arena_homeostasis_state{server=~\"$server\", state=\"DEGRADED\"} * 1 + arena_homeostasis_state{server=~\"$server\", state=\"CRITICAL\"} * 2 + arena_homeostasis_state{server=~\"$server\", state=\"FAILED\"} * 3",
-          "legendFormat": "{{server}} Health",
+          "expr": "arena_homeostasis_state{instance=~\"$instance\", state=\"HEALTHY\"} * 0 + arena_homeostasis_state{instance=~\"$instance\", state=\"DEGRADED\"} * 1 + arena_homeostasis_state{instance=~\"$instance\", state=\"CRITICAL\"} * 2 + arena_homeostasis_state{instance=~\"$instance\", state=\"FAILED\"} * 3",
+          "legendFormat": "{{instance}} Health",
           "instant": true
         }
       ],
@@ -143,13 +143,13 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "jvm_memory_bytes_used{server=~\"$server\", area=\"heap\"}",
-          "legendFormat": "{{server}} Heap Used"
+          "expr": "jvm_memory_bytes_used{instance=~\"$instance\", area=\"heap\"}",
+          "legendFormat": "{{instance}} Heap Used"
         },
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "jvm_memory_bytes_max{server=~\"$server\", area=\"heap\"}",
-          "legendFormat": "{{server}} Heap Max"
+          "expr": "jvm_memory_bytes_max{instance=~\"$instance\", area=\"heap\"}",
+          "legendFormat": "{{instance}} Heap Max"
         }
       ],
       "title": "JVM Heap Memory",
@@ -166,8 +166,8 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "rate(jvm_gc_collection_seconds_sum{server=~\"$server\"}[5m])",
-          "legendFormat": "{{server}} GC {{gc}}"
+          "expr": "sum(rate(jvm_gc_pause_seconds_sum{instance=~\"$instance\"}[5m])) or sum(rate(jvm_gc_collection_seconds_sum{instance=~\"$instance\"}[5m]))",
+          "legendFormat": "{{instance}} GC {{gc}}"
         }
       ],
       "title": "GC Pause Rate",
@@ -184,8 +184,8 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "process_cpu_usage{server=~\"$server\"}",
-          "legendFormat": "{{server}} CPU"
+          "expr": "process_cpu_usage{instance=~\"$instance\"}",
+          "legendFormat": "{{instance}} CPU"
         }
       ],
       "title": "CPU Usage",
@@ -209,8 +209,8 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "minecraft_world_entities_count{server=~\"$server\"}",
-          "legendFormat": "{{server}} {{world}}"
+          "expr": "minecraft_world_entities_count{instance=~\"$instance\"}",
+          "legendFormat": "{{instance}} {{world}}"
         }
       ],
       "title": "Entities per World",
@@ -227,8 +227,8 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "minecraft_world_loaded_chunks{server=~\"$server\"}",
-          "legendFormat": "{{server}} {{world}}"
+          "expr": "minecraft_world_loaded_chunks{instance=~\"$instance\"}",
+          "legendFormat": "{{instance}} {{world}}"
         }
       ],
       "title": "Loaded Chunks per World",
@@ -245,13 +245,13 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "minecraft_players_count{server=~\"$server\"}",
-          "legendFormat": "{{server}} Online"
+          "expr": "minecraft_players_count{instance=~\"$instance\"}",
+          "legendFormat": "{{instance}} Online"
         },
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "arena_players_in_arenas{server=~\"$server\"}",
-          "legendFormat": "{{server}} In Arenas"
+          "expr": "arena_players_in_arenas{instance=~\"$instance\"}",
+          "legendFormat": "{{instance}} In Arenas"
         }
       ],
       "title": "Players",
@@ -275,8 +275,8 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "arena_sessions_active{server=~\"$server\"}",
-          "legendFormat": "{{server}} Active Sessions"
+          "expr": "arena_sessions_active{instance=~\"$instance\"}",
+          "legendFormat": "{{instance}} Active Sessions"
         }
       ],
       "title": "Active Sessions",
@@ -293,13 +293,13 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "rate(arena_session_start_total{server=~\"$server\"}[5m])",
-          "legendFormat": "{{server}} {{arena_id}} starts/s"
+          "expr": "rate(arena_session_start_total{instance=~\"$instance\"}[5m])",
+          "legendFormat": "{{instance}} {{arena_id}} starts/s"
         },
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "rate(arena_session_end_total{server=~\"$server\"}[5m])",
-          "legendFormat": "{{server}} {{arena_id}} ends/s ({{reason}})"
+          "expr": "rate(arena_session_end_total{instance=~\"$instance\"}[5m])",
+          "legendFormat": "{{instance}} {{arena_id}} ends/s ({{reason}})"
         }
       ],
       "title": "Session Start/End Rate",
@@ -316,8 +316,8 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "arena_wave_index{server=~\"$server\"}",
-          "legendFormat": "{{server}} {{arena_id}} wave"
+          "expr": "arena_wave_index{instance=~\"$instance\"}",
+          "legendFormat": "{{instance}} {{arena_id}} wave"
         }
       ],
       "title": "Current Wave Index",
@@ -334,13 +334,13 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "rate(arena_reset_success_total{server=~\"$server\"}[5m])",
-          "legendFormat": "{{server}} {{arena_id}} success/s"
+          "expr": "rate(arena_reset_success_total{instance=~\"$instance\"}[5m])",
+          "legendFormat": "{{instance}} {{arena_id}} success/s"
         },
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "rate(arena_reset_fail_total{server=~\"$server\"}[5m])",
-          "legendFormat": "{{server}} {{arena_id}} fail/s"
+          "expr": "rate(arena_reset_fail_total{instance=~\"$instance\"}[5m])",
+          "legendFormat": "{{instance}} {{arena_id}} fail/s"
         }
       ],
       "title": "Reset Success / Fail Rate",
@@ -357,8 +357,8 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "arena_soft_fail_total{server=~\"$server\"}",
-          "legendFormat": "{{server}} {{arena_id}} soft-fails"
+          "expr": "arena_soft_fail_total{instance=~\"$instance\"}",
+          "legendFormat": "{{instance}} {{arena_id}} soft-fails"
         }
       ],
       "title": "Soft-Fail Total",
@@ -382,8 +382,8 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "rate(player_death_total{server=~\"$server\"}[5m])",
-          "legendFormat": "{{server}} {{cause}}"
+          "expr": "rate(player_death_total{instance=~\"$instance\"}[5m])",
+          "legendFormat": "{{instance}} {{cause}}"
         }
       ],
       "title": "Player Deaths by Cause (rate)",
@@ -404,8 +404,8 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "anomalous_death_suspected_total{server=~\"$server\"}",
-          "legendFormat": "{{server}} Anomalous Deaths"
+          "expr": "anomalous_death_suspected_total{instance=~\"$instance\"}",
+          "legendFormat": "{{instance}} Anomalous Deaths"
         }
       ],
       "title": "Anomalous Deaths (suspected)",
@@ -429,8 +429,8 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "rate(arena_incident_raised_total{server=~\"$server\"}[5m])",
-          "legendFormat": "{{server}} {{code}}"
+          "expr": "rate(arena_incident_raised_total{instance=~\"$instance\"}[5m])",
+          "legendFormat": "{{instance}} {{code}}"
         }
       ],
       "title": "Incidents Raised (rate)",
@@ -447,13 +447,13 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "rate(arena_exceptions_total{server=~\"$server\"}[5m])",
-          "legendFormat": "{{server}} {{module}}"
+          "expr": "rate(arena_exceptions_total{instance=~\"$instance\"}[5m])",
+          "legendFormat": "{{instance}} {{module}}"
         },
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "arena_error_log_rate{server=~\"$server\"}",
-          "legendFormat": "{{server}} Error Log Rate"
+          "expr": "arena_error_log_rate{instance=~\"$instance\"}",
+          "legendFormat": "{{instance}} Error Log Rate"
         }
       ],
       "title": "Exceptions & Error Rate",
@@ -481,23 +481,23 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "arena_homeostasis_state{server=~\"$server\", state=\"HEALTHY\"}",
-          "legendFormat": "{{server}} HEALTHY"
+          "expr": "arena_homeostasis_state{instance=~\"$instance\", state=\"HEALTHY\"}",
+          "legendFormat": "{{instance}} HEALTHY"
         },
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "arena_homeostasis_state{server=~\"$server\", state=\"DEGRADED\"}",
-          "legendFormat": "{{server}} DEGRADED"
+          "expr": "arena_homeostasis_state{instance=~\"$instance\", state=\"DEGRADED\"}",
+          "legendFormat": "{{instance}} DEGRADED"
         },
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "arena_homeostasis_state{server=~\"$server\", state=\"CRITICAL\"}",
-          "legendFormat": "{{server}} CRITICAL"
+          "expr": "arena_homeostasis_state{instance=~\"$instance\", state=\"CRITICAL\"}",
+          "legendFormat": "{{instance}} CRITICAL"
         },
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "arena_homeostasis_state{server=~\"$server\", state=\"FAILED\"}",
-          "legendFormat": "{{server}} FAILED"
+          "expr": "arena_homeostasis_state{instance=~\"$instance\", state=\"FAILED\"}",
+          "legendFormat": "{{instance}} FAILED"
         }
       ],
       "title": "Homeostasis State Timeline",
@@ -526,13 +526,13 @@
       {
         "current": { "selected": true, "text": "All", "value": "$__all" },
         "datasource": { "type": "prometheus", "uid": "${datasource}" },
-        "definition": "label_values(minecraft_players_count, server)",
+        "definition": "label_values(minecraft_players_count, instance)",
         "hide": 0,
         "includeAll": true,
-        "label": "Server",
+        "label": "Scrape target",
         "multi": true,
-        "name": "server",
-        "query": { "query": "label_values(minecraft_players_count, server)", "refId": "StandardVariableQuery" },
+        "name": "instance",
+        "query": { "query": "label_values(minecraft_players_count, instance)", "refId": "StandardVariableQuery" },
         "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
@@ -546,5 +546,5 @@
   "timezone": "",
   "title": "Arena Observability Dashboard",
   "uid": "arena-observability",
-  "version": 1
+  "version": 2
 }
