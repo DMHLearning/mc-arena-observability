@@ -2,6 +2,7 @@ package dev.denismasterherobrine.finale.arenaobservability;
 
 import dev.denismasterherobrine.finale.arenaobservability.bridge.MatchmakerBridge;
 import dev.denismasterherobrine.finale.arenaobservability.config.ObservabilityConfig;
+import dev.denismasterherobrine.finale.arenaobservability.runtime.RuntimeFlags;
 import dev.denismasterherobrine.finale.arenaobservability.detector.*;
 import dev.denismasterherobrine.finale.arenaobservability.health.ArenaHealthEvaluator;
 import dev.denismasterherobrine.finale.arenaobservability.health.ServerHealthEvaluator;
@@ -23,6 +24,7 @@ public class ArenaObservabilityPlugin extends JavaPlugin {
 
     private ObservabilityConfig observabilityConfig;
     private MetricStore metricStore;
+    private IncidentManager incidentManager;
     private ArenaMetricsCollection metricsCollection;
     private ResetListener resetListener;
 
@@ -37,7 +39,7 @@ public class ArenaObservabilityPlugin extends JavaPlugin {
         metricStore = new MetricStore();
         ArenaHealthEvaluator arenaHealthEvaluator = new ArenaHealthEvaluator();
         ServerHealthEvaluator serverHealthEvaluator = new ServerHealthEvaluator(observabilityConfig);
-        IncidentManager incidentManager = new IncidentManager(observabilityConfig, arenaHealthEvaluator, log);
+        incidentManager = new IncidentManager(observabilityConfig, arenaHealthEvaluator, log);
 
         // --- Listeners ---
         boolean arenaRuntimeAvailable = isPluginPresent("ArenaRuntime");
@@ -113,6 +115,8 @@ public class ArenaObservabilityPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        RuntimeFlags.reset();
+
         if (observabilityConfig != null && observabilityConfig.isUnifiedMetricsEnabled() && metricsCollection != null) {
             try {
                 var provider = Class.forName("dev.cubxity.plugins.metrics.api.UnifiedMetricsProvider");
@@ -135,6 +139,14 @@ public class ArenaObservabilityPlugin extends JavaPlugin {
 
     private boolean isPluginPresent(String name) {
         return Bukkit.getPluginManager().getPlugin(name) != null;
+    }
+
+    public MetricStore getMetricStore() {
+        return metricStore;
+    }
+
+    public IncidentManager getIncidentManager() {
+        return incidentManager;
     }
 
     /**

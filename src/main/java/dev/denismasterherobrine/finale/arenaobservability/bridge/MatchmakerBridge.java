@@ -2,6 +2,7 @@ package dev.denismasterherobrine.finale.arenaobservability.bridge;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import dev.denismasterherobrine.finale.arenaobservability.runtime.RuntimeFlags;
 import dev.denismasterherobrine.finale.arenaobservability.config.ObservabilityConfig;
 import dev.denismasterherobrine.finale.arenaobservability.health.ArenaHealthEvaluator;
 import dev.denismasterherobrine.finale.arenaobservability.health.HealthState;
@@ -59,6 +60,7 @@ public class MatchmakerBridge {
      * Called periodically (every batch_interval_seconds) and on state changes.
      */
     public void sendSnapshot() {
+        if (RuntimeFlags.bridgeDrop) return;
         Collection<? extends Player> online = Bukkit.getOnlinePlayers();
         if (online.isEmpty()) return;
 

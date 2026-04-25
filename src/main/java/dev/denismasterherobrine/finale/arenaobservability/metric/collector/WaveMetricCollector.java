@@ -30,6 +30,22 @@ public class WaveMetricCollector implements Collector {
             }
         }
 
+        for (String arenaId : store.getWaveDurationArenaIds()) {
+            double p50ms = store.getWaveDurationPercentile(arenaId, 0.50);
+            double p95ms = store.getWaveDurationPercentile(arenaId, 0.95);
+            double p99ms = store.getWaveDurationPercentile(arenaId, 0.99);
+            Map<String, String> labels = Map.of("arena_id", arenaId);
+            if (p50ms > 0) {
+                metrics.add(new GaugeMetric("arena_wave_duration_ms_p50", labels, p50ms));
+            }
+            if (p95ms > 0) {
+                metrics.add(new GaugeMetric("arena_wave_duration_ms_p95", labels, p95ms));
+            }
+            if (p99ms > 0) {
+                metrics.add(new GaugeMetric("arena_wave_duration_ms_p99", labels, p99ms));
+            }
+        }
+
         return metrics;
     }
 }

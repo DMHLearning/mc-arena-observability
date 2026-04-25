@@ -31,7 +31,8 @@ public class ArenaLifecycleListener implements Listener {
     public void onSessionEnded(SessionEndedEvent event) {
         store.incrementCounter("session_end:" + event.getArenaId() + ":" + event.getReason().name());
 
-        if (event.getReason() == SessionEndedEvent.EndReason.PREPARATION_FAILED) {
+        if (event.getReason() == SessionEndedEvent.EndReason.PREPARATION_FAILED
+                || event.getReason() == SessionEndedEvent.EndReason.SUPERVISOR_SOFT_FAIL) {
             store.incrementCounter("soft_fail:" + event.getArenaId());
         }
     }

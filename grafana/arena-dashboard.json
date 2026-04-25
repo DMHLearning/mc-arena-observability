@@ -117,7 +117,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "arena_homeostasis_state{instance=~\"$instance\", state=\"HEALTHY\"} * 0 + arena_homeostasis_state{instance=~\"$instance\", state=\"DEGRADED\"} * 1 + arena_homeostasis_state{instance=~\"$instance\", state=\"CRITICAL\"} * 2 + arena_homeostasis_state{instance=~\"$instance\", state=\"FAILED\"} * 3",
+          "expr": "sum by (instance) (arena_homeostasis_state{instance=~\"$instance\", state=\"DEGRADED\"}) + sum by (instance) (arena_homeostasis_state{instance=~\"$instance\", state=\"CRITICAL\"}) * 2 + sum by (instance) (arena_homeostasis_state{instance=~\"$instance\", state=\"FAILED\"}) * 3",
           "legendFormat": "{{instance}} Health",
           "instant": true
         }
@@ -166,7 +166,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "sum(rate(jvm_gc_pause_seconds_sum{instance=~\"$instance\"}[5m])) or sum(rate(jvm_gc_collection_seconds_sum{instance=~\"$instance\"}[5m]))",
+          "expr": "sum by (instance, gc) (rate(jvm_gc_duration_seconds_sum{instance=~\"$instance\"}[5m]))",
           "legendFormat": "{{instance}} GC {{gc}}"
         }
       ],
@@ -184,7 +184,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "process_cpu_usage{instance=~\"$instance\"}",
+          "expr": "process_cpu_load_ratio{instance=~\"$instance\"}",
           "legendFormat": "{{instance}} CPU"
         }
       ],
@@ -357,7 +357,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "arena_soft_fail_total{instance=~\"$instance\"}",
+          "expr": "arena_soft_fail_total{instance=~\"$instance\"} or on() (sum(arena_sessions_active{instance=~\"$instance\"}) * 0)",
           "legendFormat": "{{instance}} {{arena_id}} soft-fails"
         }
       ],
@@ -382,7 +382,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "rate(player_death_total{instance=~\"$instance\"}[5m])",
+          "expr": "sum by (instance, cause) (rate(player_death_total{instance=~\"$instance\"}[5m])) or on() (sum(arena_sessions_active{instance=~\"$instance\"}) * 0)",
           "legendFormat": "{{instance}} {{cause}}"
         }
       ],
@@ -546,5 +546,5 @@
   "timezone": "",
   "title": "Arena Observability Dashboard",
   "uid": "arena-observability",
-  "version": 2
+  "version": 3
 }

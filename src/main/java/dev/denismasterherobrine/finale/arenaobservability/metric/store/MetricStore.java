@@ -1,7 +1,10 @@
 package dev.denismasterherobrine.finale.arenaobservability.metric.store;
 
+import dev.denismasterherobrine.finale.arenaobservability.runtime.RuntimeFlags;
+
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.DoubleAdder;
@@ -24,11 +27,19 @@ public class MetricStore {
     private final Map<String, AtomicLong> lastMobDeathMs = new ConcurrentHashMap<>();
 
     public void incrementCounter(String key) {
+        if (RuntimeFlags.metricBlackhole) return;
         counters.computeIfAbsent(key, k -> new AtomicLong()).incrementAndGet();
+        int storm = RuntimeFlags.metricStormFactor;
+        if (storm > 0) {
+            counters.get(key).addAndGet(storm);
+        }
     }
 
     public void addCounter(String key, long delta) {
-        counters.computeIfAbsent(key, k -> new AtomicLong()).addAndGet(delta);
+        if (RuntimeFlags.metricBlackhole) return;
+        int storm = RuntimeFlags.metricStormFactor;
+        long adjusted = storm > 0 ? delta * (1L + storm) : delta;
+        counters.computeIfAbsent(key, k -> new AtomicLong()).addAndGet(adjusted);
     }
 
     public long getCounter(String key) {
@@ -37,6 +48,7 @@ public class MetricStore {
     }
 
     public void setGauge(String key, long value) {
+        if (RuntimeFlags.metricBlackhole) return;
         gauges.computeIfAbsent(key, k -> new AtomicLong()).set(value);
     }
 
@@ -50,8 +62,16 @@ public class MetricStore {
     }
 
     public double getWaveDurationP95(String arenaId) {
+        return getWaveDurationPercentile(arenaId, 0.95);
+    }
+
+    /**
+     * Generic accessor used by collectors to publish p50/p95/p99 in one place.
+     * Returns 0 when no samples have been recorded yet for the arena.
+     */
+    public double getWaveDurationPercentile(String arenaId, double quantile) {
         WaveDurationBuffer buf = waveDurations.get(arenaId);
-        return buf != null ? buf.percentile(0.95) : 0;
+        return buf != null ? buf.percentile(quantile) : 0;
     }
 
     public void recordMobDeath(String arenaId) {
@@ -74,6 +94,11 @@ public class MetricStore {
 
     public Map<String, AtomicLong> getAllGauges() {
         return Collections.unmodifiableMap(gauges);
+    }
+
+    /** Arenas with recorded wave durations (for arena_wave_duration_ms_p95 gauges). */
+    public Set<String> getWaveDurationArenaIds() {
+        return waveDurations.keySet();
     }
 
     /**
